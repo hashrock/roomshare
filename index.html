@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  #map{
+    width: 256px;
+    height: 256px;
+  }
+  #detail{
+    background: white;
+    width: 256px;
+    height: 266px;
+  }
+  #editor-pane{
+    display: flex;
+    flex-direction: column;
+  }
+  body{
+    background: #333;
+    display: flex;
+  }
+  </style>
+</head>
+<body>
+  <div id="phaser-example"></div>
+  <div id="editor-pane">
+    <canvas id="map" width="256" height="256"></canvas>
+    <canvas id="detail" width="256" height="266"></canvas>
+  </div>
+  <canvas style="display: none;" id="buffer" width="256" height="256"></canvas>
+  <script src="https://unpkg.com/eventemitter3@latest/umd/eventemitter3.min.js"></script>
+  <script src="./phaser.min.js"></script>
+  <script src="./editor.js"></script>
+  <script src="./index.js"></script>
+</body>
+</html>
