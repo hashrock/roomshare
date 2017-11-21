@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+const game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
     game.load.tilemap('map', 'init.csv', null, Phaser.Tilemap.CSV);
@@ -6,13 +6,13 @@ function preload() {
 }
 
 //mapとlayerはeditorからも書き換える
-var map;
-var layer;
+let map;
+let layer;
 
 
-var marker;
-var currentTile;
-var cursors;
+let marker;
+let currentTile;
+let cursors;
 
 function create() {
     map = game.add.tilemap('map', 32, 32);

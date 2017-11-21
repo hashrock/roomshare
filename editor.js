@@ -1,10 +1,10 @@
-var editor = document.getElementById("map")
-var editorDetail = document.getElementById("detail")
-var bufferEl = document.getElementById("buffer")
-var emitter = new EventEmitter3()
+const editor = document.getElementById("map");
+const editorDetail = document.getElementById("detail");
+const bufferEl = document.getElementById("buffer");
+const emitter = new EventEmitter3();
 
 //https://androidarts.com/palette/16pal.htm
-var colors = [
+const colors = [
   "#000000",
   "#9D9D9D",
   "#FFFFFF",
@@ -21,10 +21,10 @@ var colors = [
   "#005784",
   "#31A2F2",
   "#B2DCEF",
-]
+];
 
 function hexToRgb(hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
@@ -36,8 +36,8 @@ function hexToRgb(hex) {
 class Detail {
 
   setPixel(x, y) {
-    var pix = this.img.data
-    var rgb = hexToRgb(this.selectedColor)
+    const pix = this.img.data;
+    const rgb = hexToRgb(this.selectedColor);
 
     this.img.data[(y * 32 + x) * 4] = rgb.r
     this.img.data[(y * 32 + x) * 4 + 1] = rgb.g
@@ -47,7 +47,7 @@ class Detail {
   }
 
   mouseEvent(ev) {
-    var x, y;
+    let x, y;
     x = ev.layerX;
     y = ev.layerY;
 
@@ -57,7 +57,7 @@ class Detail {
       emitter.emit("updateImage", this.img)
     } else {
       //select pallete
-      var idx = Math.floor(x / 16)
+      const idx = Math.floor(x / 16);
       this.selectedColor = colors[idx]
     }
   }
@@ -81,21 +81,21 @@ class Detail {
   }
 
   drawPallete() {
-    for (var i = 0; i < colors.length; i++) {
-      var y = 256;
+    for (let i = 0; i < colors.length; i++) {
+      const y = 256;
       this.context.fillStyle = colors[i]
       this.context.fillRect(i * 16, y, 16, 10)
     }
   }
 
   redraw() {
-    var pix = this.img.data
-    for (var y = 0; y < 32; y++) {
-      for (var x = 0; x < 32; x++) {
-        var p = y * 32 * 4 + x * 4
-        var r = pix[p]
-        var g = pix[p + 1]
-        var b = pix[p + 2]
+    const pix = this.img.data;
+    for (let y = 0; y < 32; y++) {
+      for (let x = 0; x < 32; x++) {
+        const p = y * 32 * 4 + x * 4;
+        const r = pix[p];
+        const g = pix[p + 1];
+        const b = pix[p + 2];
         this.context.fillStyle = `rgb(${r}, ${g}, ${b})`
         this.context.fillRect(x * 8, y * 8, 8, 8)
       }
@@ -135,14 +135,14 @@ class Editor {
     }, false);
 
     this.editorEl.addEventListener('click', (ev) => {
-      var x, y;
+      let x, y;
       x = ev.layerX;
       y = ev.layerY;
       this.selected = toTile(x, y)
       currentTile = this.selected
 
-      var grid = toGrid(this.selected)
-      var imgData = this.bufferEl.getContext("2d").getImageData(grid.x * 32, grid.y * 32, 32, 32);
+      const grid = toGrid(this.selected);
+      const imgData = this.bufferEl.getContext("2d").getImageData(grid.x * 32, grid.y * 32, 32, 32);
       this.detail.setData(imgData)
 
       this.redraw()
@@ -152,7 +152,7 @@ class Editor {
     this.detail.init(editorDetail)
     emitter.on("updateImage", (imageData) => {
       console.log("updateImage")
-      var grid = toGrid(this.selected)
+      const grid = toGrid(this.selected);
       this.bufferEl.getContext("2d").putImageData(imageData, grid.x * 32, grid.y * 32)
       this.redraw()
       map.tilesets[0].image.src = bufferEl.toDataURL("image/png");
@@ -176,5 +176,5 @@ function toTile(x, y) {
   return Math.floor(x / 32) + Math.floor(y / 32) * 8
 }
 
-var e = new Editor()
+const e = new Editor();
 e.init(editor, editorDetail, bufferEl)
