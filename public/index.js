@@ -14,6 +14,13 @@ let marker;
 let currentTile;
 let cursors;
 
+
+var starCountRef = firebase.database().ref('map');
+starCountRef.on('value', function(snapshot) {
+  console.log(snapshot.val())
+});
+
+
 function create() {
   map = game.add.tilemap('map', 32, 32);
   map.addTilesetImage('tiles');
