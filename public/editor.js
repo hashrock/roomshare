@@ -2,6 +2,7 @@ const editor = document.getElementById("map");
 const editorDetail = document.getElementById("detail");
 const bufferEl = document.getElementById("buffer");
 const emitter = new EventEmitter3();
+var tileRef = firebase.database().ref("tile");
 
 //https://androidarts.com/palette/16pal.htm
 const colors = [
@@ -159,13 +160,27 @@ class Editor {
     this.detail = new Detail();
     this.detail.init(editorDetail);
     emitter.on("updateImage", imageData => {
-      console.log("updateImage");
       const grid = toGrid(this.selected);
       this.bufferEl
         .getContext("2d")
         .putImageData(imageData, grid.x * 32, grid.y * 32);
       this.redraw();
-      map.tilesets[0].image.src = bufferEl.toDataURL("image/png");
+      const imageRawData = bufferEl.toDataURL("image/png");
+      tileRef.set(imageRawData);
+      map.tilesets[0].image.src = imageRawData;
+      map.layer.dirty = true;
+    });
+
+    tileRef.on("value", snapshot => {
+      const imageRawData = snapshot.val();
+      // var image = new Image();
+      this.img.src = imageRawData;
+      // this.redraw();
+      // console.log(image);
+      // map.tilesets[0].image.src = data;
+      // this.bufferEl.getContext("2d").drawImage(image, 0, 0);
+      // this.redraw();
+      map.tilesets[0].image.src = imageRawData;
       map.layer.dirty = true;
     });
   }

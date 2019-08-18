@@ -20,6 +20,8 @@ let cursors;
 
 // var mapRef = firebase.database().ref("map");
 var drawRef = firebase.database().ref("draw");
+var tileRef = firebase.database().ref("tile");
+
 // mapRef.on("value", function(snapshot) {
 //   const data = snapshot.val();
 //   for (x = 0; x < map.width; x++) {
