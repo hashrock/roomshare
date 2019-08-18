@@ -18,7 +18,7 @@ let marker;
 let currentTile;
 let cursors;
 
-var mapRef = firebase.database().ref("map");
+// var mapRef = firebase.database().ref("map");
 var drawRef = firebase.database().ref("draw");
 // mapRef.on("value", function(snapshot) {
 //   const data = snapshot.val();
@@ -28,15 +28,15 @@ var drawRef = firebase.database().ref("draw");
 //     }
 //   }
 // });
-mapRef.once("value", function(snapshot) {
-  const dataStr = snapshot.val();
-  const data = dataStr.split(",");
-  for (y = 0; y < map.height; y++) {
-    for (x = 0; x < map.width; x++) {
-      putTile(data[y * map.width + x], x, y);
-    }
-  }
-});
+// mapRef.once("value", function(snapshot) {
+//   const dataStr = snapshot.val();
+//   const data = dataStr.split(",");
+//   for (y = 0; y < map.height; y++) {
+//     for (x = 0; x < map.width; x++) {
+//       putTile(data[y * map.width + x], x, y);
+//     }
+//   }
+// });
 drawRef.on("value", function(snapshot) {
   snapshot.forEach(function(snap) {
     const op = snap.val();
