@@ -18,16 +18,36 @@ let marker;
 let currentTile;
 let cursors;
 
-var starCountRef = firebase.database().ref("map");
-starCountRef.on("value", function(snapshot) {
-  console.log(snapshot.val());
+var mapRef = firebase.database().ref("map");
+var drawRef = firebase.database().ref("draw");
+// mapRef.on("value", function(snapshot) {
+//   const data = snapshot.val();
+//   for (x = 0; x < map.width; x++) {
+//     for (y = 0; y < map.height; y++) {
+//       putTile(data[y * map.width + x], x, y);
+//     }
+//   }
+// });
+mapRef.once("value", function(snapshot) {
+  const dataStr = snapshot.val();
+  const data = dataStr.split(",");
+  for (y = 0; y < map.height; y++) {
+    for (x = 0; x < map.width; x++) {
+      putTile(data[y * map.width + x], x, y);
+    }
+  }
+});
+drawRef.on("value", function(snapshot) {
+  snapshot.forEach(function(snap) {
+    const op = snap.val();
+    putTile(op.index, op.x, op.y);
+  });
 });
 
 function create() {
   map = game.add.tilemap("map", 32, 32);
   map.addTilesetImage("tiles");
   layer = map.createLayer(0);
-  //currentTile = map.getTile(2, 3);
   currentTile = 0;
   layer.resizeWorld();
 
@@ -56,8 +76,22 @@ function update() {
     if (game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
       currentTile = getTile(marker.x, marker.y);
     } else {
-      if (getTile(marker.x, marker.y).index != currentTile.index) {
+      if (getTile(marker.x, marker.y).index != currentTile) {
         putTile(currentTile, marker.x, marker.y);
+        let x = 0;
+        let y = 0;
+        let result = [];
+
+        for (y = 0; y < map.height; y++) {
+          for (x = 0; x < map.width; x++) {
+            result.push(getTile(x, y).index);
+          }
+        }
+        // mapRef.set(resstr);
+        drawRef.push({ index: currentTile, x: marker.x, y: marker.y });
+        // const resstr = result.join(",");
+        // mapRef.set(resstr);
+        // console.log(resstr);
       }
     }
   }
