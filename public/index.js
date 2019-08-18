@@ -38,26 +38,26 @@ function create() {
   cursors = game.input.keyboard.createCursorKeys();
 }
 
+function putTile(tile, x, y) {
+  map.putTile(tile, layer.getTileX(x), layer.getTileY(y));
+}
+
+function getTile(x, y) {
+  return map.getTile(layer.getTileX(x), layer.getTileY(y));
+}
+
 function update() {
   marker.x = layer.getTileX(game.input.activePointer.worldX) * 32;
   marker.y = layer.getTileY(game.input.activePointer.worldY) * 32;
 
+  //マップチップの描画処理
   if (game.input.mousePointer.isDown) {
+    //スポイト処理
     if (game.input.keyboard.isDown(Phaser.Keyboard.SHIFT)) {
-      currentTile = map.getTile(
-        layer.getTileX(marker.x),
-        layer.getTileY(marker.y)
-      );
+      currentTile = getTile(marker.x, marker.y);
     } else {
-      if (
-        map.getTile(layer.getTileX(marker.x), layer.getTileY(marker.y)).index !=
-        currentTile.index
-      ) {
-        map.putTile(
-          currentTile,
-          layer.getTileX(marker.x),
-          layer.getTileY(marker.y)
-        );
+      if (getTile(marker.x, marker.y).index != currentTile.index) {
+        putTile(currentTile, marker.x, marker.y);
       }
     }
   }
