@@ -100,6 +100,17 @@ class Detail {
     this.context = this.el.getContext("2d");
     this.drawPallete();
     this.selectedColor = colors[0];
+    this.el.addEventListener("dblclick", (ev) => {
+      if (ev.layerY > 256) {
+        for (let y = 0; y < 16; y++) {
+          for (let x = 0; x < 16; x++) {
+            this.setPixel(x, y);
+          }
+        }
+        emitter.emit("updateImage", this.img);
+      }
+    });
+
     this.el.addEventListener("mousedown", (ev) => {
       this.mousedown = true;
       this.mouseEvent(ev);
@@ -110,6 +121,16 @@ class Detail {
     this.el.addEventListener("mousemove", (ev) => {
       if (this.mousedown) {
         this.mouseEvent(ev);
+      }
+    });
+
+    window.addEventListener("copy", () => {
+      this.copied = this.img;
+    });
+    window.addEventListener("paste", () => {
+      if (this.copied) {
+        this.setData(this.copied);
+        emitter.emit("updateImage", this.img);
       }
     });
   }
