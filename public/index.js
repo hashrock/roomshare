@@ -8,7 +8,7 @@ const game = new Phaser.Game(400, 300, Phaser.CANVAS, "phaser-example", {
 // game.scale.setMinMax(400, 300, 800, 600);
 
 function preload() {
-  game.load.tilemap("map", "init.csv", null, Phaser.Tilemap.CSV);
+  game.load.tilemap("map", "tile.csv", null, Phaser.Tilemap.CSV);
   game.load.image("tiles", "tile.png");
 }
 
@@ -48,7 +48,7 @@ let cursors;
 //   });
 // });
 socket.on("draw", (op) => {
-  putTile(op.index, op.x, op.y);
+  putTile(op.index, op.x * 16, op.y * 16);
 });
 
 function create() {
@@ -97,7 +97,11 @@ function update() {
             result.push(getTile(x, y).index);
           }
         }
-        socket.emit("draw", { index: currentTile, x: marker.x, y: marker.y });
+        socket.emit("draw", {
+          index: currentTile,
+          x: marker.x / 16,
+          y: marker.y / 16,
+        });
         // drawRef.push({ index: currentTile, x: marker.x, y: marker.y });
       }
     }

@@ -7,6 +7,12 @@ app.use(express.static("public"));
 
 const users = [];
 let tile = null;
+
+let fs = require("fs");
+const tileStr = fs.readFileSync("./public/tile.csv", "utf-8");
+let map = tileStr.split("\n").map((i) => i.split(","));
+console.log(map);
+
 io.on("connection", function (socket) {
   users.push(socket.id);
   socket.on("tile", function (msg) {
@@ -15,6 +21,8 @@ io.on("connection", function (socket) {
   });
   socket.on("draw", function (msg) {
     io.emit("draw", msg);
+    console.log(msg);
+    map[+msg.y][+msg.x] = msg.index;
   });
   socket.on("login", function (obj) {
     io.emit("users", users);
@@ -39,10 +47,34 @@ function saveImage(data) {
   });
 }
 
+// function initTile(){
+//   let out = [];
+//   for (let y = 0; y < 32; y++) {
+//     let row = [];
+//     for (let x = 0; x < 32; x++) {
+//       row.push("0");
+//     }
+//     out.push(row);
+//   }
+// }
+
+function saveTile() {
+  const o = map.map((i) => i.join(",")).join("\n");
+  var fs = require("fs");
+  fs.writeFile("public/tile.csv", o, function (err) {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
 setInterval(() => {
   if (tile) {
     saveImage(tile);
   }
+}, 1000);
+setInterval(() => {
+  saveTile();
 }, 1000);
 
 http.listen(process.env.PORT | 3000, function () {});
