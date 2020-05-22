@@ -9,7 +9,7 @@ const game = new Phaser.Game(400, 300, Phaser.CANVAS, "phaser-example", {
 
 function preload() {
   game.load.tilemap("map", "init.csv", null, Phaser.Tilemap.CSV);
-  game.load.image("tiles", "init.png");
+  game.load.image("tiles", "tile.png");
 }
 
 //mapとlayerはeditorからも書き換える

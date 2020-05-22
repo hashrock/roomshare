@@ -129,7 +129,7 @@ class Editor {
     this.bufferEl = buffer;
 
     this.img = new Image();
-    this.img.src = "./init.png";
+    this.img.src = "./tile.png";
     this.img.onload = () => {
       this.bufferEl.getContext("2d").drawImage(this.img, 0, 0);
       this.redraw();
