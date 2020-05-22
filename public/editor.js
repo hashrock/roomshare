@@ -1,8 +1,10 @@
+let socket = io();
 const editor = document.getElementById("map");
 const editorDetail = document.getElementById("detail");
 const bufferEl = document.getElementById("buffer");
 const emitter = new EventEmitter3();
-var tileRef = firebase.database().ref("tile");
+// var tileRef = firebase.database().ref("tile");
+// const socket = io();
 
 //https://androidarts.com/palette/16pal.htm
 const colors = [
@@ -166,23 +168,29 @@ class Editor {
         .putImageData(imageData, grid.x * 16, grid.y * 16);
       this.redraw();
       const imageRawData = bufferEl.toDataURL("image/png");
-      tileRef.set(imageRawData);
+      socket.emit("tile", imageRawData);
       map.tilesets[0].image.src = imageRawData;
       map.layer.dirty = true;
     });
 
-    tileRef.on("value", (snapshot) => {
-      const imageRawData = snapshot.val();
-      // var image = new Image();
+    socket.on("tile", (imageRawData) => {
       this.img.src = imageRawData;
-      // this.redraw();
-      // console.log(image);
-      // map.tilesets[0].image.src = data;
-      // this.bufferEl.getContext("2d").drawImage(image, 0, 0);
-      // this.redraw();
       map.tilesets[0].image.src = imageRawData;
       map.layer.dirty = true;
     });
+
+    // tileRef.on("value", (snapshot) => {
+    //   const imageRawData = snapshot.val();
+    //   // var image = new Image();
+    //   this.img.src = imageRawData;
+    //   // this.redraw();
+    //   // console.log(image);
+    //   // map.tilesets[0].image.src = data;
+    //   // this.bufferEl.getContext("2d").drawImage(image, 0, 0);
+    //   // this.redraw();
+    //   map.tilesets[0].image.src = imageRawData;
+    //   map.layer.dirty = true;
+    // });
   }
 
   constructor() {}

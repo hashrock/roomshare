@@ -21,8 +21,8 @@ let currentTile;
 let cursors;
 
 // var mapRef = firebase.database().ref("map");
-var drawRef = firebase.database().ref("draw");
-var tileRef = firebase.database().ref("tile");
+// var drawRef = firebase.database().ref("draw");
+// var tileRef = firebase.database().ref("tile");
 
 // mapRef.on("value", function(snapshot) {
 //   const data = snapshot.val();
@@ -41,11 +41,14 @@ var tileRef = firebase.database().ref("tile");
 //     }
 //   }
 // });
-drawRef.on("value", function (snapshot) {
-  snapshot.forEach(function (snap) {
-    const op = snap.val();
-    putTile(op.index, op.x, op.y);
-  });
+// drawRef.on("value", function (snapshot) {
+//   snapshot.forEach(function (snap) {
+//     const op = snap.val();
+//     putTile(op.index, op.x, op.y);
+//   });
+// });
+socket.on("draw", (op) => {
+  putTile(op.index, op.x, op.y);
 });
 
 function create() {
@@ -94,11 +97,8 @@ function update() {
             result.push(getTile(x, y).index);
           }
         }
-        // mapRef.set(resstr);
-        drawRef.push({ index: currentTile, x: marker.x, y: marker.y });
-        // const resstr = result.join(",");
-        // mapRef.set(resstr);
-        // console.log(resstr);
+        socket.emit("draw", { index: currentTile, x: marker.x, y: marker.y });
+        // drawRef.push({ index: currentTile, x: marker.x, y: marker.y });
       }
     }
   }
@@ -117,5 +117,5 @@ function update() {
 }
 
 function render() {
-  game.debug.text("マップチップかけるよー", 16, 16, "#efefef");
+  // game.debug.text("マップチップかけるよー", 16, 16, "#efefef");
 }
