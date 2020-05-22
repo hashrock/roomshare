@@ -1,9 +1,11 @@
-const game = new Phaser.Game(800, 600, Phaser.AUTO, "phaser-example", {
+const game = new Phaser.Game(400, 300, Phaser.CANVAS, "phaser-example", {
   preload: preload,
   create: create,
   update: update,
-  render: render
+  render: render,
 });
+// game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+// game.scale.setMinMax(400, 300, 800, 600);
 
 function preload() {
   game.load.tilemap("map", "init.csv", null, Phaser.Tilemap.CSV);
@@ -39,15 +41,15 @@ var tileRef = firebase.database().ref("tile");
 //     }
 //   }
 // });
-drawRef.on("value", function(snapshot) {
-  snapshot.forEach(function(snap) {
+drawRef.on("value", function (snapshot) {
+  snapshot.forEach(function (snap) {
     const op = snap.val();
     putTile(op.index, op.x, op.y);
   });
 });
 
 function create() {
-  map = game.add.tilemap("map", 32, 32);
+  map = game.add.tilemap("map", 16, 16);
   map.addTilesetImage("tiles");
   layer = map.createLayer(0);
   currentTile = 0;
@@ -55,9 +57,12 @@ function create() {
 
   marker = game.add.graphics();
   marker.lineStyle(2, 0x000000, 1);
-  marker.drawRect(0, 0, 32, 32);
+  marker.drawRect(0, 0, 16, 16);
 
   cursors = game.input.keyboard.createCursorKeys();
+
+  game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  game.scale.setMinMax(800, 600, 800, 600);
 }
 
 function putTile(tile, x, y) {
@@ -69,8 +74,8 @@ function getTile(x, y) {
 }
 
 function update() {
-  marker.x = layer.getTileX(game.input.activePointer.worldX) * 32;
-  marker.y = layer.getTileY(game.input.activePointer.worldY) * 32;
+  marker.x = layer.getTileX(game.input.activePointer.worldX) * 16;
+  marker.y = layer.getTileY(game.input.activePointer.worldY) * 16;
 
   //マップチップの描画処理
   if (game.input.mousePointer.isDown) {
@@ -112,5 +117,5 @@ function update() {
 }
 
 function render() {
-  game.debug.text("マップチップかけるよー", 32, 32, "#efefef");
+  game.debug.text("マップチップかけるよー", 16, 16, "#efefef");
 }

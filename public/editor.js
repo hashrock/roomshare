@@ -21,7 +21,7 @@ const colors = [
   "#1B2632",
   "#005784",
   "#31A2F2",
-  "#B2DCEF"
+  "#B2DCEF",
 ];
 
 function hexToRgb(hex) {
@@ -30,7 +30,7 @@ function hexToRgb(hex) {
     ? {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
+        b: parseInt(result[3], 16),
       }
     : null;
 }
@@ -40,10 +40,10 @@ class Detail {
     const pix = this.img.data;
     const rgb = hexToRgb(this.selectedColor);
 
-    this.img.data[(y * 32 + x) * 4] = rgb.r;
-    this.img.data[(y * 32 + x) * 4 + 1] = rgb.g;
-    this.img.data[(y * 32 + x) * 4 + 2] = rgb.b;
-    this.img.data[(y * 32 + x) * 4 + 3] = 256;
+    this.img.data[(y * 16 + x) * 4] = rgb.r;
+    this.img.data[(y * 16 + x) * 4 + 1] = rgb.g;
+    this.img.data[(y * 16 + x) * 4 + 2] = rgb.b;
+    this.img.data[(y * 16 + x) * 4 + 3] = 256;
     this.redraw();
   }
 
@@ -54,7 +54,7 @@ class Detail {
 
     if (y < 256) {
       //draw dot
-      this.setPixel(Math.floor(x / 8), Math.floor(y / 8));
+      this.setPixel(Math.floor(x / 16), Math.floor(y / 16));
       emitter.emit("updateImage", this.img);
     } else {
       //select pallete
@@ -67,14 +67,14 @@ class Detail {
     this.context = this.el.getContext("2d");
     this.drawPallete();
     this.selectedColor = colors[0];
-    this.el.addEventListener("mousedown", ev => {
+    this.el.addEventListener("mousedown", (ev) => {
       this.mousedown = true;
       this.mouseEvent(ev);
     });
     this.el.addEventListener("mouseup", () => {
       this.mousedown = false;
     });
-    this.el.addEventListener("mousemove", ev => {
+    this.el.addEventListener("mousemove", (ev) => {
       if (this.mousedown) {
         this.mouseEvent(ev);
       }
@@ -91,14 +91,14 @@ class Detail {
 
   redraw() {
     const pix = this.img.data;
-    for (let y = 0; y < 32; y++) {
-      for (let x = 0; x < 32; x++) {
-        const p = y * 32 * 4 + x * 4;
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        const p = y * 16 * 4 + x * 4;
         const r = pix[p];
         const g = pix[p + 1];
         const b = pix[p + 2];
         this.context.fillStyle = `rgb(${r}, ${g}, ${b})`;
-        this.context.fillRect(x * 8, y * 8, 8, 8);
+        this.context.fillRect(x * 16, y * 16, 16, 16);
       }
     }
   }
@@ -113,10 +113,10 @@ class Editor {
   redraw() {
     this.context.drawImage(this.bufferEl, 0, 0);
     this.context.strokeRect(
-      (this.selected % 8) * 32,
-      Math.floor(this.selected / 8) * 32,
-      32,
-      32
+      (this.selected % 8) * 16,
+      Math.floor(this.selected / 8) * 16,
+      16,
+      16
     );
   }
 
@@ -135,11 +135,11 @@ class Editor {
     this.context.fillStyle = "rgb(255,255,255)";
     this.context.fillRect(0, 0, 300, 300);
     this.started = false;
-    this.editorEl.addEventListener("mousemove", ev => {}, false);
+    this.editorEl.addEventListener("mousemove", (ev) => {}, false);
 
     this.editorEl.addEventListener(
       "click",
-      ev => {
+      (ev) => {
         let x, y;
         x = ev.layerX;
         y = ev.layerY;
@@ -149,7 +149,7 @@ class Editor {
         const grid = toGrid(this.selected);
         const imgData = this.bufferEl
           .getContext("2d")
-          .getImageData(grid.x * 32, grid.y * 32, 32, 32);
+          .getImageData(grid.x * 16, grid.y * 16, 16, 16);
         this.detail.setData(imgData);
 
         this.redraw();
@@ -159,11 +159,11 @@ class Editor {
 
     this.detail = new Detail();
     this.detail.init(editorDetail);
-    emitter.on("updateImage", imageData => {
+    emitter.on("updateImage", (imageData) => {
       const grid = toGrid(this.selected);
       this.bufferEl
         .getContext("2d")
-        .putImageData(imageData, grid.x * 32, grid.y * 32);
+        .putImageData(imageData, grid.x * 16, grid.y * 16);
       this.redraw();
       const imageRawData = bufferEl.toDataURL("image/png");
       tileRef.set(imageRawData);
@@ -171,7 +171,7 @@ class Editor {
       map.layer.dirty = true;
     });
 
-    tileRef.on("value", snapshot => {
+    tileRef.on("value", (snapshot) => {
       const imageRawData = snapshot.val();
       // var image = new Image();
       this.img.src = imageRawData;
@@ -191,11 +191,11 @@ class Editor {
 function toGrid(idx) {
   return {
     x: idx % 8,
-    y: Math.floor(idx / 8)
+    y: Math.floor(idx / 8),
   };
 }
 function toTile(x, y) {
-  return Math.floor(x / 32) + Math.floor(y / 32) * 8;
+  return Math.floor(x / 16) + Math.floor(y / 16) * 8;
 }
 
 const e = new Editor();
