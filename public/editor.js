@@ -146,8 +146,8 @@ class Editor {
   redraw() {
     this.context.drawImage(this.bufferEl, 0, 0);
     this.context.strokeRect(
-      (this.selected % 8) * 16,
-      Math.floor(this.selected / 8) * 16,
+      (this.selected % 16) * 16,
+      Math.floor(this.selected / 16) * 16,
       16,
       16
     );
@@ -229,12 +229,12 @@ class Editor {
 
 function toGrid(idx) {
   return {
-    x: idx % 8,
-    y: Math.floor(idx / 8),
+    x: idx % 16,
+    y: Math.floor(idx / 16),
   };
 }
 function toTile(x, y) {
-  return Math.floor(x / 16) + Math.floor(y / 16) * 8;
+  return Math.floor(x / 16) + Math.floor(y / 16) * 16;
 }
 
 const e = new Editor();

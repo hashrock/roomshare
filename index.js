@@ -11,7 +11,6 @@ let tile = null;
 let fs = require("fs");
 const tileStr = fs.readFileSync("./public/tile.csv", "utf-8");
 let map = tileStr.split("\n").map((i) => i.split(","));
-console.log(map);
 
 io.on("connection", function (socket) {
   users.push(socket.id);
@@ -21,7 +20,6 @@ io.on("connection", function (socket) {
   });
   socket.on("draw", function (msg) {
     io.emit("draw", msg);
-    console.log(msg);
     map[+msg.y][+msg.x] = msg.index;
   });
   socket.on("login", function (obj) {
