@@ -5,7 +5,7 @@ const io = require("socket.io")(http);
 
 app.use(express.static("public"));
 
-const users = [];
+const users = {};
 let tile = null;
 
 let fs = require("fs");
@@ -13,7 +13,13 @@ const tileStr = fs.readFileSync("./public/tile.csv", "utf-8");
 let map = tileStr.split("\n").map((i) => i.split(","));
 
 io.on("connection", function (socket) {
-  users.push(socket.id);
+  users[socket.id] = {
+    x: 10,
+    y: 10,
+    d: 1,
+  };
+
+  console.log(users);
   socket.on("tile", function (msg) {
     io.emit("tile", msg);
     tile = msg;
@@ -25,9 +31,17 @@ io.on("connection", function (socket) {
   socket.on("login", function (obj) {
     io.emit("users", users);
   });
+  socket.on("move", function (obj) {
+    users[socket.id] = obj;
+    io.emit("move", {
+      id: socket.id,
+      ...obj,
+    });
+  });
+
   socket.on("disconnect", () => {
-    const index = users.indexOf(socket.id);
-    if (index !== -1) users.splice(index, 1);
+    console.log("delete: " + users[socket.id]);
+    delete users[socket.id];
   });
 });
 
