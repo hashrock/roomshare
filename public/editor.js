@@ -48,15 +48,46 @@ class Detail {
     this.img.data[(y * 16 + x) * 4 + 3] = 256;
     this.redraw();
   }
+  line(x0, y0, x1, y1) {
+    const dx = Math.abs(x1 - x0);
+    const dy = Math.abs(y1 - y0);
+    const sx = x0 < x1 ? 1 : -1;
+    const sy = y0 < y1 ? 1 : -1;
+    let err = dx - dy;
 
+    while (true) {
+      this.setPixel(x0, y0);
+      if (x0 == x1 && y0 == y1) {
+        break;
+      }
+      const e2 = err << 1;
+      if (e2 > -dy) {
+        err -= dy;
+        x0 += sx;
+      }
+      if (e2 < dx) {
+        err += dx;
+        y0 += sy;
+      }
+    }
+  }
   mouseEvent(ev) {
     let x, y;
     x = ev.layerX;
     y = ev.layerY;
+    let px = Math.floor(x / 16);
+    let py = Math.floor(y / 16);
+    this.old = {
+      x: px,
+      y: py,
+    };
 
     if (y < 256) {
       //draw dot
-      this.setPixel(Math.floor(x / 16), Math.floor(y / 16));
+      if (this.old) {
+        this.line(this.old.x, this.old.y, px, py);
+      }
+      // this.setPixel(Math.floor(x / 16), Math.floor(y / 16));
       emitter.emit("updateImage", this.img);
     } else {
       //select pallete
