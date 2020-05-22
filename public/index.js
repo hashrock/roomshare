@@ -10,6 +10,7 @@ const game = new Phaser.Game(400, 300, Phaser.CANVAS, "phaser-example", {
 function preload() {
   game.load.tilemap("map", "tile.csv", null, Phaser.Tilemap.CSV);
   game.load.image("tiles", "tile.png");
+  game.load.spritesheet("chara01", "chara01.png", 20, 28, 24);
 }
 
 //mapとlayerはeditorからも書き換える
@@ -51,6 +52,8 @@ socket.on("draw", (op) => {
   putTile(op.index, op.x * 16, op.y * 16);
 });
 
+var mummy;
+
 function create() {
   map = game.add.tilemap("map", 16, 16);
   map.addTilesetImage("tiles");
@@ -66,6 +69,14 @@ function create() {
 
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.setMinMax(800, 600, 800, 600);
+
+  mummy = game.add.sprite(300, 200, "chara01");
+  mummy.animations.add("walk-down", [0, 1, 2, 1]);
+  mummy.animations.add("walk-left", [6, 7, 8, 7]);
+  mummy.animations.add("walk-right", [12, 13, 14, 13]);
+  mummy.animations.add("walk-up", [18, 19, 20, 19]);
+
+  game.camera.follow(mummy);
 }
 
 function putTile(tile, x, y) {
@@ -108,15 +119,19 @@ function update() {
   }
 
   if (cursors.left.isDown) {
-    game.camera.x -= 4;
+    mummy.animations.play("walk-left", 8, true);
+    mummy.x -= 3;
   } else if (cursors.right.isDown) {
-    game.camera.x += 4;
+    mummy.animations.play("walk-right", 8, true);
+    mummy.x += 3;
   }
 
   if (cursors.up.isDown) {
-    game.camera.y -= 4;
+    mummy.animations.play("walk-up", 8, true);
+    mummy.y -= 3;
   } else if (cursors.down.isDown) {
-    game.camera.y += 4;
+    mummy.animations.play("walk-down", 8, true);
+    mummy.y += 3;
   }
 }
 
