@@ -43,7 +43,7 @@ io.on("connection", function (socket) {
   });
 
   socket.on("disconnect", () => {
-    console.log("delete: " + users[socket.id]);
+    console.log("delete: " + JSON.stringify(users[socket.id]));
     delete users[socket.id];
   });
 });
