@@ -31,7 +31,6 @@ io.on("connection", function (socket) {
   });
   socket.on("login", function (obj) {
     users[socket.id].g = obj.g;
-    console.log(users);
     io.emit("users", users);
   });
   socket.on("move", function (obj) {

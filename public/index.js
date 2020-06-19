@@ -32,17 +32,21 @@ socket.on("draw", (op) => {
   putTile(op.index, op.x * 16, op.y * 16);
 });
 
+function updateDebug() {
+  document.querySelector("#debug").innerHTML = JSON.stringify(users, null, 2);
+}
+
 var player;
 let users = {};
 let userSprites = {};
 socket.on("users", (obj) => {
   users = obj;
+  updateDebug();
+
   Object.keys(users).forEach(function (key) {
     if (socket.io.engine.id === key) {
       return;
     }
-
-    console.log(users[key]);
 
     if (!userSprites[key]) {
       addUser(key, users[key].g);
@@ -51,14 +55,17 @@ socket.on("users", (obj) => {
 });
 
 socket.on("move", (obj) => {
-  if (socket.io.engine.id === obj.id) {
-    return;
-  }
   users[obj.id] = {
     x: obj.x,
     y: obj.y,
     d: obj.d,
+    g: obj.g,
   };
+  updateDebug();
+  if (socket.io.engine.id === obj.id) {
+    return;
+  }
+
   moveUser(obj.id, obj.x, obj.y, obj.d);
 });
 

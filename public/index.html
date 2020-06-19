@@ -19,9 +19,18 @@
         display: flex;
         flex-direction: column;
       }
-      body {
+      .container {
         background: #333;
         display: flex;
+      }
+      body {
+        background: #222;
+        margin: 0;
+      }
+      #debug {
+        background: #999;
+        white-space: pre;
+        font-size: 0.5em;
       }
       canvas {
         image-rendering: pixelated;
@@ -30,17 +39,21 @@
     </style>
   </head>
   <body>
-    <div id="phaser-example"></div>
-    <div id="editor-pane">
-      <canvas id="map" width="256" height="256"></canvas>
-      <canvas id="detail" width="256" height="266"></canvas>
+    <div class="container">
+      <div id="phaser-example"></div>
+      <div id="editor-pane">
+        <canvas id="map" width="256" height="256"></canvas>
+        <canvas id="detail" width="256" height="266"></canvas>
+      </div>
+      <canvas
+        style="display: none;"
+        id="buffer"
+        width="256"
+        height="256"
+      ></canvas>
     </div>
-    <canvas
-      style="display: none;"
-      id="buffer"
-      width="256"
-      height="256"
-    ></canvas>
+
+    <div id="debug"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/eventemitter3@latest/umd/eventemitter3.min.js"></script>
     <script src="./phaser.min.js"></script>
