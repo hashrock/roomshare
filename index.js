@@ -17,9 +17,9 @@ io.on("connection", function (socket) {
     x: 10,
     y: 10,
     d: 1,
+    g: "",
   };
 
-  console.log(users);
   socket.on("tile", function (msg) {
     io.emit("tile", msg);
     tile = msg;
@@ -29,6 +29,8 @@ io.on("connection", function (socket) {
     map[+msg.y][+msg.x] = msg.index;
   });
   socket.on("login", function (obj) {
+    users[socket.id].g = obj.g;
+    console.log(users);
     io.emit("users", users);
   });
   socket.on("move", function (obj) {

@@ -7,10 +7,17 @@ const game = new Phaser.Game(400, 300, Phaser.CANVAS, "phaser-example", {
 // game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
 // game.scale.setMinMax(400, 300, 800, 600);
 
+function zeropad(i) {
+  return i.toString().padStart(3, "0");
+}
+
 function preload() {
   game.load.tilemap("map", "tile.csv", null, Phaser.Tilemap.CSV);
   game.load.image("tiles", "tile.png");
-  game.load.spritesheet("chara01", "chara01.png", 20, 28, 24);
+  for (let i = 0; i < 10; i++) {
+    const istr = zeropad(i);
+    game.load.spritesheet(`chara${istr}`, `./chara/${istr}.png`, 20, 28, 24);
+  }
 }
 
 //mapとlayerはeditorからも書き換える
@@ -21,33 +28,6 @@ let marker;
 let currentTile;
 let cursors;
 
-// var mapRef = firebase.database().ref("map");
-// var drawRef = firebase.database().ref("draw");
-// var tileRef = firebase.database().ref("tile");
-
-// mapRef.on("value", function(snapshot) {
-//   const data = snapshot.val();
-//   for (x = 0; x < map.width; x++) {
-//     for (y = 0; y < map.height; y++) {
-//       putTile(data[y * map.width + x], x, y);
-//     }
-//   }
-// });
-// mapRef.once("value", function(snapshot) {
-//   const dataStr = snapshot.val();
-//   const data = dataStr.split(",");
-//   for (y = 0; y < map.height; y++) {
-//     for (x = 0; x < map.width; x++) {
-//       putTile(data[y * map.width + x], x, y);
-//     }
-//   }
-// });
-// drawRef.on("value", function (snapshot) {
-//   snapshot.forEach(function (snap) {
-//     const op = snap.val();
-//     putTile(op.index, op.x, op.y);
-//   });
-// });
 socket.on("draw", (op) => {
   putTile(op.index, op.x * 16, op.y * 16);
 });
@@ -61,8 +41,11 @@ socket.on("users", (obj) => {
     if (socket.io.engine.id === key) {
       return;
     }
+
+    console.log(users[key]);
+
     if (!userSprites[key]) {
-      addUser(key);
+      addUser(key, users[key].g);
     }
   });
 });
@@ -81,17 +64,19 @@ socket.on("move", (obj) => {
 
 socket.on("connect", () => {
   var id = socket.io.engine.id;
-  console.log(id);
-
-  socket.emit("login");
+  socket.emit("login", { g: charaId });
 });
 
-function addUser(id) {
-  let user = game.add.sprite(300, 200, "chara01");
+function addWalkAnimation(user) {
   user.animations.add("walk-down", [0, 1, 2, 1]);
   user.animations.add("walk-left", [6, 7, 8, 7]);
   user.animations.add("walk-right", [12, 13, 14, 13]);
   user.animations.add("walk-up", [18, 19, 20, 19]);
+}
+
+function addUser(id, g) {
+  let user = game.add.sprite(300, 200, g);
+  addWalkAnimation(user);
   userSprites[id] = user;
 }
 
@@ -101,9 +86,6 @@ function moveUser(id, x, y, d) {
     userSprites[id].y = y;
     userSprites[id].d = d;
 
-    // game.add
-    //   .tween(userSprites[id])
-    //   .to({ x: x, y: y }, 100, Phaser.Easing.Linear.None, true);
     switch (d) {
       case 0:
         userSprites[id].animations.play("walk-right", 8, true);
@@ -120,6 +102,9 @@ function moveUser(id, x, y, d) {
     }
   }
 }
+const g = Math.floor(Math.random() * 10);
+
+const charaId = `chara${zeropad(g)}`;
 
 function create() {
   map = game.add.tilemap("map", 16, 16);
@@ -137,11 +122,9 @@ function create() {
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.setMinMax(800, 600, 800, 600);
 
-  player = game.add.sprite(300, 200, "chara01");
-  player.animations.add("walk-down", [0, 1, 2, 1]);
-  player.animations.add("walk-left", [6, 7, 8, 7]);
-  player.animations.add("walk-right", [12, 13, 14, 13]);
-  player.animations.add("walk-up", [18, 19, 20, 19]);
+  player = game.add.sprite(300, 200, charaId);
+  player.charaId = charaId;
+  addWalkAnimation(player);
 
   game.camera.follow(player);
 }
@@ -167,7 +150,7 @@ function throttle(func, timeFrame) {
 let d = 0;
 
 function sendMove() {
-  socket.emit("move", { x: player.x, y: player.y, d: d });
+  socket.emit("move", { x: player.x, y: player.y, d: d, g: player.g });
 }
 let move = throttle(sendMove, 100);
 
