@@ -3,6 +3,7 @@ const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
+const serialize = require("./lib/serialize");
 app.use(express.static("public"));
 
 const users = {};
@@ -47,48 +48,13 @@ io.on("connection", function (socket) {
   });
 });
 
-function saveImage(data) {
-  // Base64のデータのみが入っている。
-  var b64img = data.split(",")[1];
-  var base64 = require("urlsafe-base64");
-  var img = base64.decode(b64img);
-
-  var fs = require("fs");
-  fs.writeFile("public/tile.png", img, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
-}
-
-// function initTile(){
-//   let out = [];
-//   for (let y = 0; y < 32; y++) {
-//     let row = [];
-//     for (let x = 0; x < 32; x++) {
-//       row.push("0");
-//     }
-//     out.push(row);
-//   }
-// }
-
-function saveTile() {
-  const o = map.map((i) => i.join(",")).join("\n");
-  var fs = require("fs");
-  fs.writeFile("public/tile.csv", o, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
-}
-
 setInterval(() => {
   if (tile) {
-    saveImage(tile);
+    serialize.saveImage(tile);
   }
 }, 1000);
 setInterval(() => {
-  saveTile();
+  serialize.saveTile(map);
 }, 1000);
 
 http.listen(process.env.PORT | 3000, function () {});
