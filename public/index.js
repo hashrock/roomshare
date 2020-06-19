@@ -105,6 +105,7 @@ function moveUser(id, x, y, d) {
 const g = Math.floor(Math.random() * 10);
 
 const charaId = `chara${zeropad(g)}`;
+let wasd;
 
 function create() {
   map = game.add.tilemap("map", 16, 16);
@@ -118,7 +119,12 @@ function create() {
   marker.drawRect(0, 0, 16, 16);
 
   cursors = game.input.keyboard.createCursorKeys();
-
+  wasd = {
+    up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+    down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+    left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+    right: game.input.keyboard.addKey(Phaser.Keyboard.D),
+  };
   game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   game.scale.setMinMax(800, 600, 800, 600);
 
@@ -185,24 +191,24 @@ function update() {
     }
   }
 
-  if (cursors.left.isDown) {
+  if (cursors.left.isDown || wasd.left.isDown) {
     player.animations.play("walk-left", 8, true);
     player.x -= 3;
     d = 2;
     move();
-  } else if (cursors.right.isDown) {
+  } else if (cursors.right.isDown || wasd.right.isDown) {
     player.animations.play("walk-right", 8, true);
     player.x += 3;
     d = 0;
     move();
   }
 
-  if (cursors.up.isDown) {
+  if (cursors.up.isDown || wasd.up.isDown) {
     player.animations.play("walk-up", 8, true);
     player.y -= 3;
     d = 3;
     move();
-  } else if (cursors.down.isDown) {
+  } else if (cursors.down.isDown || wasd.down.isDown) {
     player.animations.play("walk-down", 8, true);
     player.y += 3;
     d = 1;
